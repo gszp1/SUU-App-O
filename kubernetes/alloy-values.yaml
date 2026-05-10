@@ -103,7 +103,7 @@ alloy:
         }
       }
 
-      // ===== OTLP RECEIVER (traces + metrics from Online Boutique) =====
+      // ===== OTLP RECEIVER (traces from Online Boutique) =====
       otelcol.receiver.otlp "default" {
         grpc {
           endpoint = "0.0.0.0:4317"
@@ -112,15 +112,13 @@ alloy:
           endpoint = "0.0.0.0:4318"
         }
         output {
-          traces  = [otelcol.processor.batch.default.input]
-          metrics = [otelcol.processor.batch.default.input]
+          traces = [otelcol.processor.batch.default.input]
         }
       }
 
       otelcol.processor.batch "default" {
         output {
-          traces  = [otelcol.exporter.otlp.tempo.input]
-          metrics = [otelcol.exporter.prometheusremotewrite.default.input]
+          traces = [otelcol.exporter.otlp.tempo.input]
         }
       }
 
@@ -130,12 +128,6 @@ alloy:
           tls {
             insecure = true
           }
-        }
-      }
-
-      otelcol.exporter.prometheusremotewrite "default" {
-        endpoint {
-          url = "http://kps-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
         }
       }
 
