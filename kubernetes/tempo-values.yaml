@@ -15,7 +15,7 @@ tempo:
         path: /var/tempo/wal
   metricsGenerator:
     enabled: true
-    remoteWriteUrl: "http://kps-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
+    remoteWriteUrl: "http://kps-kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/write"
   overrides:
     defaults:
       metrics_generator:

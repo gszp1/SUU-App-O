@@ -99,7 +99,7 @@ alloy:
 
       prometheus.remote_write "default" {
         endpoint {
-          url = "http://kps-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
+          url = "http://kps-kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/write"
         }
       }
 
