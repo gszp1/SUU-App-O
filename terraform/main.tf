@@ -121,7 +121,7 @@ resource "aws_instance" "k3s" {
     volume_type = "gp3"
   }
 
-  user_data = templatefile("${path.module}/user_data.sh", {})
+  user_data = file("${path.module}/user_data.sh")
 
   tags = {
     Name    = "k3s-node"
