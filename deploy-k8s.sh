@@ -57,11 +57,19 @@ helm upgrade --install grafana grafana-community/grafana \
 echo "Deploying Online Boutique..."
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml -n boutique
 kubectl apply -f "$SCRIPT_DIR/kubernetes/online-boutique.yaml" -n boutique
+
+# Disabled loadgenerator (too much cpu usage)
+kubectl delete deployment loadgenerator -n boutique --ignore-not-found
+
+# Disabled adservice (too much ram usage)
+kubectl scale deployment adservice -n boutique --replicas=0
+
+echo "Waiting for pods..."
 kubectl wait --for=condition=available deployment --all -n boutique --timeout=300s 2>/dev/null || true
 
-# Enable tracing to Alloy
+echo "Enabling tracing..."
 for svc in frontend checkoutservice productcatalogservice shippingservice cartservice \
-           paymentservice emailservice recommendationservice adservice currencyservice; do
+           paymentservice emailservice recommendationservice currencyservice; do
   kubectl set env deployment/$svc -n boutique \
     ENABLE_TRACING=1 \
     COLLECTOR_SERVICE_ADDR=alloy.observability.svc.cluster.local:4317 \
