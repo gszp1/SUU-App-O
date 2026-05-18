@@ -43,9 +43,11 @@ kubectl get nodes
 
 # Deploy stack
 cd "$SCRIPT_DIR"
-chmod +x deploy-k8s.sh
+chmod +x deploy-k8s.sh deploy-mcp.sh
 ./deploy-k8s.sh
+./deploy-mcp.sh
 
 echo ""
 echo "Grafana:         http://${PUBLIC_IP}:30300  (admin/admin)"
 echo "Online Boutique: http://${PUBLIC_IP}:30080"
+echo "Grafana MCP Server: http://${PUBLIC_IP}:30090"
