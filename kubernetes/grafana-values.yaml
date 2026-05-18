@@ -1,0 +1,59 @@
+service:
+  type: NodePort
+  nodePort: 30300
+
+adminUser: admin
+adminPassword: admin
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus
+        url: http://kps-kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+        isDefault: true
+        jsonData:
+          exemplarTraceIdDestinations:
+            - name: trace_id
+              datasourceUid: tempo
+
+      - name: Loki
+        type: loki
+        uid: loki
+        url: http://loki.observability.svc.cluster.local:3100
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: "(?:trace_id|traceID)=([\\w]+)"
+              name: TraceID
+              url: "$${__value.raw}"
+
+      - name: Tempo
+        type: tempo
+        uid: tempo
+        url: http://tempo.observability.svc.cluster.local:3200
+        jsonData:
+          serviceMap:
+            datasourceUid: prometheus
+          tracesToMetrics:
+            datasourceUid: prometheus
+          tracesToLogs:
+            datasourceUid: loki
+            filterByTraceID: true
+          nodeGraph:
+            enabled: true
+
+persistence:
+  enabled: true
+  storageClassName: local-path
+  size: 1Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
