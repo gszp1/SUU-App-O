@@ -14,6 +14,12 @@ helm repo update
 kubectl create namespace observability --dry-run=client -o yaml | kubectl apply -f -
 kubectl create namespace boutique --dry-run=client -o yaml | kubectl apply -f -
 
+# Boutique dashboard
+kubectl create configmap grafana-boutique-dashboard \
+  --from-file=boutique-dashboard.json="$SCRIPT_DIR/kubernetes/boutique-dashboard.json" \
+  -n observability \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 # Prometheus
 NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 echo "Deploying Prometheus (node: $NODE_IP)..."
@@ -48,10 +54,16 @@ helm upgrade --install alloy grafana/alloy \
 
 # Grafana
 echo "Deploying Grafana..."
+kubectl delete pvc grafana -n observability --ignore-not-found
+kubectl delete pvc grafana -n observability --ignore-not-found
+kubectl delete secret grafana -n observability --ignore-not-found
+kubectl delete pv $(kubectl get pv | grep grafana | awk '{print $1}') 2>/dev/null || true
+sleep 10
 helm upgrade --install grafana grafana-community/grafana \
   -n observability \
   -f "$SCRIPT_DIR/kubernetes/grafana-values.yaml" \
-  --wait --timeout 5m
+  --force \
+  --timeout 8m
 
 # Online Boutique
 echo "Deploying Online Boutique..."
