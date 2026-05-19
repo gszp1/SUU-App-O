@@ -6,12 +6,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 NAMESPACE="observability"
 MANIFEST="$SCRIPT_DIR/kubernetes/grafana-mcp-server/mcp-grafana.yaml"
+MANIFEST_SVC="$SCRIPT_DIR/kubernetes/grafana-mcp-server/mcp-grafana-service.yaml"
 SECRET_NAME="mcp-grafana-credentials"
 GRAFANA_URL="http://grafana.${NAMESPACE}.svc.cluster.local"
 GRAFANA_ADMIN_USER="${GRAFANA_ADMIN_USER:-admin}"
 GRAFANA_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-admin}"
 SA_NAME="mcp-grafana"
 TOKEN_NAME="mcp-grafana-token-$(date +%s)"
+
+echo "########## Deploying Grafana MCP Server ##########"
 
 # Create a service account + token in Grafana using a short-lived port-forward
 echo "Creating Grafana service account and token..."
@@ -78,6 +81,9 @@ kubectl -n "$NAMESPACE" rollout restart deployment/mcp-grafana
 # Wait for rollout
 echo "Waiting for MCP Grafana rollout..."
 kubectl -n "$NAMESPACE" rollout status deployment/mcp-grafana --timeout=180s
+
+echo "Applying MCP Grafana Service manifest..."
+kubectl apply -f "$MANIFEST_SVC"
 
 echo ""
 echo "Done. MCP Grafana available on NodePort :30090 (SSE on /sse)"
