@@ -18,7 +18,7 @@ spec:
       containers:
         - name: mcp-grafana
           image: mcp/grafana:latest
-          args: ["-t", "sse", "--sse-address", ":8000"]
+          args: ["-t", "sse", "-address", ":8000"]
           ports:
             - containerPort: 8000
               name: http
