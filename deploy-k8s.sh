@@ -63,7 +63,7 @@ helm upgrade --install grafana grafana-community/grafana \
   -n observability \
   -f "$SCRIPT_DIR/kubernetes/grafana-values.yaml" \
   --force \
-  --timeout 8m
+  --wait --timeout 8m
 
 # Online Boutique
 echo "Deploying Online Boutique..."
