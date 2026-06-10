@@ -36,21 +36,21 @@ echo "Deploying Loki..."
 helm upgrade --install loki grafana-community/loki \
   -n observability \
   -f "$SCRIPT_DIR/kubernetes/loki-values.yaml" \
-  --wait --timeout 5m
+  --wait --timeout 8m
 
 # Tempo
 echo "Deploying Tempo..."
 helm upgrade --install tempo grafana-community/tempo \
   -n observability \
   -f "$SCRIPT_DIR/kubernetes/tempo-values.yaml" \
-  --wait --timeout 5m
+  --wait --timeout 8m
 
 # Alloy
 echo "Deploying Grafana Alloy..."
 helm upgrade --install alloy grafana/alloy \
   -n observability \
   -f "$SCRIPT_DIR/kubernetes/alloy-values.yaml" \
-  --wait --timeout 5m
+  --wait --timeout 8m
 
 # Grafana
 echo "Deploying Grafana..."
